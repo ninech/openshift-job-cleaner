@@ -1,0 +1,318 @@
+apiVersion: v1
+items:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: 2017-12-20T12:48:30Z
+    generateName: job-failing-
+    labels:
+      controller-uid: 149521ad-e584-11e7-87a4-46f0a67fb626
+      job-name: job-failing-zrq4p
+    name: job-failing-zrq4p
+    namespace: cleaner
+    resourceVersion: "1321"
+    selfLink: /apis/batch/v1/namespaces/cleaner/jobs/job-failing-zrq4p
+    uid: 149521ad-e584-11e7-87a4-46f0a67fb626
+  spec:
+    activeDeadlineSeconds: 300
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 149521ad-e584-11e7-87a4-46f0a67fb626
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 149521ad-e584-11e7-87a4-46f0a67fb626
+          job-name: job-failing-zrq4p
+        name: pi
+      spec:
+        containers:
+        - command:
+          - ashashashash
+          image: perl
+          imagePullPolicy: Always
+          name: pi
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    active: 1
+    startTime: 2017-12-20T12:48:30Z
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: 2017-12-20T12:48:29Z
+    generateName: job-working-
+    labels:
+      controller-uid: 1436b6b3-e584-11e7-87a4-46f0a67fb626
+      job-name: job-working-0s19t
+    name: job-working-0s19t
+    namespace: cleaner
+    resourceVersion: "1474"
+    selfLink: /apis/batch/v1/namespaces/cleaner/jobs/job-working-0s19t
+    uid: 1436b6b3-e584-11e7-87a4-46f0a67fb626
+  spec:
+    activeDeadlineSeconds: 300
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 1436b6b3-e584-11e7-87a4-46f0a67fb626
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 1436b6b3-e584-11e7-87a4-46f0a67fb626
+          job-name: job-working-0s19t
+        name: pi
+      spec:
+        containers:
+        - command:
+          - perl
+          - -Mbignum=bpi
+          - -wle
+          - print bpi(2000)
+          image: perl
+          imagePullPolicy: Always
+          name: pi
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    completionTime: 2017-12-20T12:49:15Z
+    conditions:
+    - lastProbeTime: 2017-12-20T12:49:15Z
+      lastTransitionTime: 2017-12-20T12:49:15Z
+      status: "True"
+      type: Complete
+    startTime: 2017-12-20T12:48:29Z
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"CronJob","namespace":"cleaner","name":"openshift-job-cleaner","uid":"130edb07-e584-11e7-87a4-46f0a67fb626","apiVersion":"batch","resourceVersion":"1301"}}
+    creationTimestamp: 2017-12-20T12:49:29Z
+    labels:
+      controller-uid: 37ff0140-e584-11e7-87a4-46f0a67fb626
+      job-name: openshift-job-cleaner-1513774140
+    name: openshift-job-cleaner-1513774140
+    namespace: cleaner
+    ownerReferences:
+    - apiVersion: batch/v2alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: openshift-job-cleaner
+      uid: 130edb07-e584-11e7-87a4-46f0a67fb626
+    resourceVersion: "1569"
+    selfLink: /apis/batch/v1/namespaces/cleaner/jobs/openshift-job-cleaner-1513774140
+    uid: 37ff0140-e584-11e7-87a4-46f0a67fb626
+  spec:
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 37ff0140-e584-11e7-87a4-46f0a67fb626
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 37ff0140-e584-11e7-87a4-46f0a67fb626
+          job-name: openshift-job-cleaner-1513774140
+      spec:
+        activeDeadlineSeconds: 300
+        containers:
+        - env:
+          - name: SENTRY_DSN
+            value: https://<key>:<secret>@sentry.io/<project>
+          image: ninech/openshift-job-cleaner:prod
+          imagePullPolicy: IfNotPresent
+          name: openshift-job-cleaner
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/ojc/
+            name: ojc-config-file
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: openshift-job-cleaner
+        serviceAccountName: openshift-job-cleaner
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: ojc.yml
+          name: ojc-config-file
+  status:
+    completionTime: 2017-12-20T12:49:34Z
+    conditions:
+    - lastProbeTime: 2017-12-20T12:49:34Z
+      lastTransitionTime: 2017-12-20T12:49:34Z
+      status: "True"
+      type: Complete
+    startTime: 2017-12-20T12:49:29Z
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"CronJob","namespace":"cleaner","name":"openshift-job-cleaner","uid":"130edb07-e584-11e7-87a4-46f0a67fb626","apiVersion":"batch","resourceVersion":"1683"}}
+    creationTimestamp: 2017-12-20T12:50:29Z
+    labels:
+      controller-uid: 5bd84fca-e584-11e7-87a4-46f0a67fb626
+      job-name: openshift-job-cleaner-1513774200
+    name: openshift-job-cleaner-1513774200
+    namespace: cleaner
+    ownerReferences:
+    - apiVersion: batch/v2alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: openshift-job-cleaner
+      uid: 130edb07-e584-11e7-87a4-46f0a67fb626
+    resourceVersion: "1757"
+    selfLink: /apis/batch/v1/namespaces/cleaner/jobs/openshift-job-cleaner-1513774200
+    uid: 5bd84fca-e584-11e7-87a4-46f0a67fb626
+  spec:
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 5bd84fca-e584-11e7-87a4-46f0a67fb626
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 5bd84fca-e584-11e7-87a4-46f0a67fb626
+          job-name: openshift-job-cleaner-1513774200
+      spec:
+        activeDeadlineSeconds: 300
+        containers:
+        - env:
+          - name: SENTRY_DSN
+            value: https://<key>:<secret>@sentry.io/<project>
+          image: ninech/openshift-job-cleaner:prod
+          imagePullPolicy: IfNotPresent
+          name: openshift-job-cleaner
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/ojc/
+            name: ojc-config-file
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: openshift-job-cleaner
+        serviceAccountName: openshift-job-cleaner
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: ojc.yml
+          name: ojc-config-file
+  status:
+    completionTime: 2017-12-20T12:50:33Z
+    conditions:
+    - lastProbeTime: 2017-12-20T12:50:33Z
+      lastTransitionTime: 2017-12-20T12:50:33Z
+      status: "True"
+      type: Complete
+    startTime: 2017-12-20T12:50:29Z
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"CronJob","namespace":"cleaner","name":"openshift-job-cleaner","uid":"130edb07-e584-11e7-87a4-46f0a67fb626","apiVersion":"batch","resourceVersion":"1772"}}
+    creationTimestamp: 2017-12-20T12:51:29Z
+    labels:
+      controller-uid: 7fa95e49-e584-11e7-87a4-46f0a67fb626
+      job-name: openshift-job-cleaner-1513774260
+    name: openshift-job-cleaner-1513774260
+    namespace: cleaner
+    ownerReferences:
+    - apiVersion: batch/v2alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: openshift-job-cleaner
+      uid: 130edb07-e584-11e7-87a4-46f0a67fb626
+    resourceVersion: "1796"
+    selfLink: /apis/batch/v1/namespaces/cleaner/jobs/openshift-job-cleaner-1513774260
+    uid: 7fa95e49-e584-11e7-87a4-46f0a67fb626
+  spec:
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 7fa95e49-e584-11e7-87a4-46f0a67fb626
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 7fa95e49-e584-11e7-87a4-46f0a67fb626
+          job-name: openshift-job-cleaner-1513774260
+      spec:
+        activeDeadlineSeconds: 300
+        containers:
+        - env:
+          - name: SENTRY_DSN
+            value: https://<key>:<secret>@sentry.io/<project>
+          image: ninech/openshift-job-cleaner:prod
+          imagePullPolicy: IfNotPresent
+          name: openshift-job-cleaner
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/ojc/
+            name: ojc-config-file
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: openshift-job-cleaner
+        serviceAccountName: openshift-job-cleaner
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: ojc.yml
+          name: ojc-config-file
+  status:
+    completionTime: 2017-12-20T12:51:33Z
+    conditions:
+    - lastProbeTime: 2017-12-20T12:51:33Z
+      lastTransitionTime: 2017-12-20T12:51:33Z
+      status: "True"
+      type: Complete
+    startTime: 2017-12-20T12:51:29Z
+    succeeded: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

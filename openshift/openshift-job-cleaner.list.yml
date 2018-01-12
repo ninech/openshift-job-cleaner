@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: openshift-job-cleaner
+- apiVersion: v1
+  data:
+    ojc.yml: >-
+      blacklist:
+        - default
+        - kube-public
+        - kube-system
+        - management-infra
+        - openshift
+        - openshift-infra
+      default:
+        success:
+          max_age: 120
+          retention: 1
+        failure:
+          max_age: 120
+          retention: 1
+  kind: ConfigMap
+  metadata:
+    name: ojc.yml
+- apiVersion: batch/v2alpha1
+  kind: ScheduledJob
+  metadata:
+    name: openshift-job-cleaner
+  spec:
+    # every hour
+    schedule: "0 * * * *"
+    jobTemplate:
+      spec:
+        template:
+          spec:
+            activeDeadlineSeconds: 300
+            serviceAccountName: openshift-job-cleaner
+            volumes:
+              - configMap:
+                  defaultMode: 420
+                  name: ojc.yml
+                name: ojc-config-file
+            containers:
+            - name: openshift-job-cleaner
+              image: docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
+              env:
+                - name: SENTRY_DSN
+                  value: 'https://<key>:<secret>@sentry.io/<project>'
+              volumeMounts:
+                - mountPath: /opt/ojc/
+                  name: ojc-config-file
+                  readOnly: true
+            restartPolicy: OnFailure

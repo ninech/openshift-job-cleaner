@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: job-working-long-
+spec:
+  activeDeadlineSeconds: 300
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: pi
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["sleep",  "180"]
+      restartPolicy: OnFailure

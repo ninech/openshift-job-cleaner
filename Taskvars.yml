@@ -1,0 +1,6 @@
+NS: docker-registry.nine.ch/ninech
+REPO: openshift-job-cleaner
+NAME: openshift-job-cleaner
+VERSION: latest
+OC_VERSION: v3.6.1
+OC_TAG: 008f2d5

@@ -1,0 +1,124 @@
+all:
+  cmds:
+    - task: lint
+    - task: test:app
+    - task: clean
+    - task: build
+    - task: test:env
+    - task: test:integration
+
+ci:
+ cmds:
+  - task: all
+
+deps:
+  cmds:
+    - dep ensure
+
+# run the docker-in-docker version of all
+dind:
+  cmds:
+   - |
+     {
+     cat <<EOF
+     version: "2"
+     services:
+        docker-cmds:
+          image: docker-registry.nine.ch/ninech/golang-tools:latest
+          command: ['task', 'all']
+          environment:
+            - DOCKER_HOST=tcp://dind-daemon:2375
+          links:
+            - dind-daemon
+          volumes:
+            - './:/go/src/app'
+        dind-daemon:
+          image: docker:17.11-dind
+          privileged: true
+          # for openshift
+          command: --insecure-registry 172.30.0.0/16
+     EOF
+     } | docker-compose -f - up --force-recreate --remove-orphans --abort-on-container-exit
+
+lint:
+  deps: [deps]
+  cmds:
+    # ignore warnings about not pinning package versions
+    - hadolint Dockerfile --ignore DL3008
+    # CGO disabling is done to workaround gometalinter bug
+    - CGO_ENABLED=0 gometalinter --vendor ./...
+
+clean:
+  cmds:
+    - rm -rf .task
+    - docker rmi -f "{{ .NS }}/{{ .REPO }}:{{ .VERSION }}"
+
+build:
+  deps: [deps]
+  sources:
+    - Dockerfile
+  method: checksum
+  cmds:
+    - docker build -t "{{ .NS }}/{{ .REPO }}:{{ .VERSION }}" --build-arg OC_VERSION={{ .OC_VERSION }} --build-arg OC_TAG={{ .OC_TAG }}  .
+
+test:app:
+  cmds:
+    - goverage -v -coverprofile=.coverage.txt ./...
+
+# Check the container setup, to ensure the correct things are installed
+test:env:
+  deps: [build]
+  cmds:
+    - GOSS_FILES_STRATEGY=cp dgoss run -it  --entrypoint /bin/sh "{{ .NS }}/{{ .REPO }}:{{ .VERSION }}"
+
+
+# Integration tests take around 10-15 minutes
+test:integration:
+  deps: [build]
+  cmds:
+   - docker tag "{{ .NS }}/{{ .REPO }}:{{ .VERSION }}" "{{ $.NS }}/{{ $.REPO }}:integration"
+   - oc cluster down
+   - oc cluster up --version="{{ .OC_VERSION }}"
+   - oc new-project jobsite
+   - oc create -f test/working.yml
+   - oc create -f test/working.yml
+   - oc create -f test/failing.yml
+   - oc create -f test/failfast.yml
+   - oc new-project blacklisted
+   - oc create -f test/working.yml
+   - oc create -f test/failing.yml
+   - oc new-project more-jobs
+   - oc create -f test/working.yml
+   - oc create -f test/long.yml
+   - oc create -f test/working.yml
+   - oc create -f test/working.yml
+   - oc create -f test/working.yml
+   - oc create -f test/working.yml
+   - oc create -f test/failing.yml
+   - oc create -f test/failing.yml
+   - oc create -f test/failfast.yml
+   - oc create -f test/failfast.yml
+   - oc new-project cleaner
+   - oc create -f test/list.yml
+   - oc login -u system:admin
+   # sa has full cluster access
+   - oc adm policy add-cluster-role-to-user edit system:serviceaccount:cleaner:openshift-job-cleaner
+   - oc get jobs --all-namespaces
+   - sleep 200
+   # initial pass will get rid of all successful jobs and fast fails. long fails and long running jobs remain
+   - oc get jobs --all-namespaces
+   - if [ $(oc get jobs -o name -n blacklisted | wc -l) != "2" ]; then exit 1; fi
+   - if [ $(oc get jobs -o name -n more-jobs | wc -l) != "3" ]; then exit 1; fi
+   - if [ $(oc get jobs -o name -n jobsite | wc -l) != "1" ]; then exit 1; fi
+   # add a fast fail and a long running job
+   - oc project jobsite
+   - oc create -f test/long.yml
+   - oc project more-jobs
+   - oc create -f test/failfast.yml
+   - sleep 540
+   # everything except the blacklisted namespace should be cleaned up
+   - oc get jobs --all-namespaces
+   - if [ $(oc get jobs -o name -n blacklisted | wc -l) != "2" ]; then exit 1; fi
+   - if [ $(oc get jobs -o name -n more-jobs | wc -l) != "0" ]; then exit 1; fi
+   - if [ $(oc get jobs -o name -n jobsite | wc -l) != "0" ]; then exit 1; fi
+   - oc cluster down
