@@ -18,7 +18,7 @@ func discardSuccessTimestamps(items []jobItem, earliest time.Time) []jobItem {
 	return older
 }
 
-// discardSuccessTimestamps takes a slice of job items and removes all the elements earlier than earliest
+// discardFailureTimestamps takes a slice of job items and removes all the elements earlier than earliest
 func discardFailureTimestamps(items []jobItem, earliest time.Time) []jobItem {
 	older, _ := sort(items, func(item jobItem) bool {
 		if len(item.Status.Conditions) == 0 {
@@ -43,9 +43,9 @@ func sort(vs []jobItem, f func(item jobItem) bool) ([]jobItem, []jobItem) {
 	return sortsTrue, sortsFalse
 }
 
-// buildRetentionDuration is a simple helper to form a basic int in the app config file to a time strineg we can use as a duration
+// buildMaxAgeDuration is a simple helper to form a basic int in the app config file to a time string we can use as a duration
 // userVal is in hours
-func buildRetentionDuration(userVal int) (time.Time, error) {
+func buildMaxAgeDuration(userVal int) (time.Time, error) {
 	retentionActual := fmt.Sprintf("-%dm", userVal)
 	rDur, err := time.ParseDuration(retentionActual)
 	if err != nil {

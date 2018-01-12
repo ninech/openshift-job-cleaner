@@ -65,11 +65,11 @@ func TestLoadConfigInvalidPath(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 
 	expectedCfg := new(config)
-	expectedCfg.Default.Success = cleanupDescriptor{MaxAge: 24, Retention: 1}
-	expectedCfg.Default.Failure = cleanupDescriptor{MaxAge: 12, Retention: 5}
+	expectedCfg.Default.Success = cleanupDescriptor{MaxAge: 24}
+	expectedCfg.Default.Failure = cleanupDescriptor{MaxAge: 12}
 	expectedCfg.Blacklist = append(expectedCfg.Blacklist, "openshift-infra")
 
-	nscld := namespaceCleanupDescriptor{cleanupDescriptor{MaxAge: 23, Retention: 6}, cleanupDescriptor{MaxAge: 18, Retention: 5}}
+	nscld := namespaceCleanupDescriptor{cleanupDescriptor{MaxAge: 23}, cleanupDescriptor{MaxAge: 18}}
 	expectedCfg.Namespaces = make(map[string]namespaceCleanupDescriptor)
 	expectedCfg.Namespaces["my-namespace"] = nscld
 

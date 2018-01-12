@@ -18,10 +18,8 @@ items:
       default:
         success:
           max_age: 120
-          retention: 1
         failure:
           max_age: 120
-          retention: 1
   kind: ConfigMap
   metadata:
     name: ojc.yml

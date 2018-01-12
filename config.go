@@ -16,13 +16,12 @@ type config struct {
 // namespaceCleanupDescriptor is a simple namespace descriptor allowing you to specify values based on the job exist status
 type namespaceCleanupDescriptor struct {
 	Success cleanupDescriptor `yaml:"success"`
-	Failure cleanupDescriptor `yaml:"retention"`
+	Failure cleanupDescriptor `yaml:"failure"`
 }
 
 // cleanupDescriptor is the basic unit which describes how a resource should be cleaned
 type cleanupDescriptor struct {
 	MaxAge    int `yaml:"max_age"`
-	Retention int `yaml:"retention"`
 }
 
 // currentJobstate is the result of a call to oc getting a set of jobs

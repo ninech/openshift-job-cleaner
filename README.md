@@ -1,7 +1,7 @@
 # OPENSHIFT JOB CLEANER
 
-[![pipeline status](https://gitlab.nine.ch/ninech/openshift-job-cleaner/badges/initial-work/pipeline.svg)](https://gitlab.nine.ch/ninech/openshift-job-cleaner/commits/initial-work)
-[![coverage report](https://gitlab.nine.ch/ninech/openshift-job-cleaner/badges/initial-work/coverage.svg)](https://gitlab.nine.ch/ninech/openshift-job-cleaner/commits/initial-work)
+[![pipeline status](https://gitlab.nine.ch/ninech/openshift-job-cleaner/badges/master/pipeline.svg)](https://gitlab.nine.ch/ninech/openshift-job-cleaner/commits/master)
+[![coverage report](https://gitlab.nine.ch/ninech/openshift-job-cleaner/badges/master/coverage.svg)](https://gitlab.nine.ch/ninech/openshift-job-cleaner/commits/master)
 
 A basic openshift job cleaner for your cluster.
 Idea from https://github.com/willemvd/openshift-scheduledjobs-cleanup but refactored as a golang application and
@@ -26,9 +26,11 @@ oc adm policy add-cluster-role-to-user edit system:serviceaccount:cleaner:opensh
 ### Application Config
 
 See [example config](openshift/openshift-job-clearer.config.example.yml) for an example configuration.
-- max-age and retention can be specified as default values or as namespace specific values
-- max-age and retention for success and failure can be configured differently
+- max-age can be specified as default values or as namespace specific values
+- max-age for success and failure can be configured differently
 - a job is not considered failed unless it reaches it's `activeDeadlineSeconds`
+
+max-age is in MINUTES.
 
 #### Blacklist
 Any namespace in the blacklist is excluded by the job cleaner for both successful and failed jobs
@@ -36,9 +38,6 @@ Any namespace in the blacklist is excluded by the job cleaner for both successfu
 #### Max-age
 - For successful jobs the max-age is taken from completion
 - For failed jobs the max-age is taken from termination (and thus is affected by overall job timeout)
-
-#### Retention
-The number of containers newer than the max age to retain when cleaning
 
 ### Container config
 

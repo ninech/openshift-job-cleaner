@@ -53,17 +53,16 @@ func main() {
 		successes, failures := sort(jobstate.Items, func(item jobItem) bool {
 			return !(item.Status.Failed > 0)
 		})
-		log.Println(failures)
 
 		// SUCCESSES
-		// retention is checked by looking at the completion date. if it is newer than now - retentionPeriod remove it from the array of jobs to delete
-		err = doClean(descriptor.Success.Retention, v, successes, discardSuccessTimestamps)
+		// max age is checked by looking at the completion date. if it is newer than now - maxAge remove it from the array of jobs to delete
+		err = doClean(descriptor.Success, v, successes, discardSuccessTimestamps)
 		if continueOnError(err) {
 			continue
 		}
 
 		// FAILURES
-		err = doClean(descriptor.Failure.Retention, v, failures, discardFailureTimestamps)
+		err = doClean(descriptor.Failure, v, failures, discardFailureTimestamps)
 		if continueOnError(err) {
 			continue
 		}
@@ -71,8 +70,8 @@ func main() {
 }
 
 // doClean takes the job items, filters them with filter, executes the call to oc to delete them, and prints the output if any
-func doClean(retention int, namespace string, jobItems []jobItem, filter func(items []jobItem, earliest time.Time) []jobItem) error {
-	retentionTime, err := buildRetentionDuration(retention)
+func doClean(descriptor (cleanupDescriptor), namespace string, jobItems []jobItem, filter func(items []jobItem, earliest time.Time) []jobItem) error {
+	retentionTime, err := buildMaxAgeDuration(descriptor.MaxAge)
 	if err != nil {
 		return err
 	}
@@ -99,6 +98,9 @@ func doInitialSetup() {
 		confPath = "/opt/ojc/ojc.yml"
 	}
 	userConfig, err = loadConfig(confPath) //userConfig is a global
+	if ocDebug  {
+		log.Println(userConfig)
+	}
 	panicOnError(err)
 }
 

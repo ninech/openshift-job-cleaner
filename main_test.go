@@ -35,13 +35,13 @@ func TestGetFileAsString(t *testing.T) {
 
 func TestGetDescriptorForJob(t *testing.T) {
 
-	defaultDescriptor := namespaceCleanupDescriptor{cleanupDescriptor{1, 1}, cleanupDescriptor{2, 2}}
+	defaultDescriptor := namespaceCleanupDescriptor{cleanupDescriptor{1}, cleanupDescriptor{2}}
 	userConfig.Default = defaultDescriptor
 
 	specialized := make(map[string]namespaceCleanupDescriptor, 2)
-	mns := namespaceCleanupDescriptor{cleanupDescriptor{21, 2}, cleanupDescriptor{22, 4}}
+	mns := namespaceCleanupDescriptor{cleanupDescriptor{21}, cleanupDescriptor{22}}
 	specialized["my-namespace"] = mns
-	specialized["some-project"] = namespaceCleanupDescriptor{cleanupDescriptor{1, 1}, cleanupDescriptor{24, 6}}
+	specialized["some-project"] = namespaceCleanupDescriptor{cleanupDescriptor{1}, cleanupDescriptor{24}}
 	userConfig.Namespaces = specialized
 
 	mynsD := userConfig.getJobDescriptor("my-namespace")

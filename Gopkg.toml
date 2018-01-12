@@ -25,7 +25,7 @@
   name = "github.com/evalphobia/logrus_sentry"
   version = "0.4.2"
 
-[[constraint]]
+[[override]]
   branch = "master"
   name = "github.com/getsentry/raven-go"
 

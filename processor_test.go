@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestBuildRetentionDuration(t *testing.T) {
+func TestBuildMaxAgeDuration(t *testing.T) {
 
 	rand.Seed(time.Now().Unix())
 
@@ -23,12 +23,12 @@ func TestBuildRetentionDuration(t *testing.T) {
 		expectedMin := time.Now().Add(dur).Add(minBound)
 		expectedMax := time.Now().Add(dur).Add(maxBound)
 
-		retention, err := buildRetentionDuration(0)
+		retention, err := buildMaxAgeDuration(0)
 		if err != nil {
 			t.Fatal("should not produce error for valid integer")
 		}
 		if retention.After(time.Now()) {
-			t.Fatal("retention can never be in the future")
+			t.Fatal("max age can never be in the future")
 		}
 		if retention.Before(expectedMin) || retention.After(expectedMax) {
 			t.Fatal("value before expected min", retention, "Expected Min:", expectedMin)
@@ -39,10 +39,10 @@ func TestBuildRetentionDuration(t *testing.T) {
 	}
 }
 
-func TestFutureRetentionTime(t *testing.T) {
-	_, err := buildRetentionDuration(-1)
+func TestNegativeMaxAge(t *testing.T) {
+	_, err := buildMaxAgeDuration(-1)
 	if err == nil {
-		t.Fatal("retention time error should be created if time string is invalid")
+		t.Fatal("max age time error should be created if time string is invalid")
 	}
 }
 
@@ -81,30 +81,30 @@ func TestDiscardSuccessTimestamps(t *testing.T) {
 	testData[4].Status.CompletionTime = ocTime{}
 	testData[4].Status.Succeeded = 3
 
-	retentionTime, _ := buildRetentionDuration(1)
+	retentionTime, _ := buildMaxAgeDuration(1)
 	finaloutput := discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 4, t)
 
-	retentionTime, _ = buildRetentionDuration(15)
+	retentionTime, _ = buildMaxAgeDuration(15)
 	finaloutput = discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 2, t)
 	if finaloutput[0].Status.Succeeded != 1 || finaloutput[1].Status.Succeeded != 3 {
 		t.Fatal("returned the wrong items", finaloutput)
 	}
 
-	retentionTime, _ = buildRetentionDuration(16)
+	retentionTime, _ = buildMaxAgeDuration(16)
 	finaloutput = discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 2, t)
 
-	retentionTime, _ = buildRetentionDuration(17)
+	retentionTime, _ = buildMaxAgeDuration(17)
 	finaloutput = discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 1, t)
 
-	retentionTime, _ = buildRetentionDuration(25)
+	retentionTime, _ = buildMaxAgeDuration(25)
 	finaloutput = discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 1, t)
 
-	retentionTime, _ = buildRetentionDuration(26)
+	retentionTime, _ = buildMaxAgeDuration(26)
 	finaloutput = discardSuccessTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 0, t)
 
@@ -113,7 +113,7 @@ func TestDiscardSuccessTimestamps(t *testing.T) {
 func TestDiscardFailureTimestampsUninitializedCondition(t *testing.T) {
 	testData := make([]jobItem, 1)
 	testData[0].Status.Failed = 1
-	retentionTime, _ := buildRetentionDuration(1)
+	retentionTime, _ := buildMaxAgeDuration(1)
 	finaloutput := discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 0, t)
 }
@@ -137,11 +137,11 @@ func TestDiscardFailureTimestamps(t *testing.T) {
 	testData[3].Status.Conditions[0].LastTransitionTime = ocTime(tNow.Add(timestampHelper(25)))
 	testData[3].Status.Failed = 1
 
-	retentionTime, _ := buildRetentionDuration(1)
+	retentionTime, _ := buildMaxAgeDuration(1)
 	finaloutput := discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 3, t)
 
-	retentionTime, _ = buildRetentionDuration(15)
+	retentionTime, _ = buildMaxAgeDuration(15)
 	finaloutput = discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 2, t)
 	if finaloutput[0].Status.Failed != 1 || finaloutput[1].Status.Failed != 1 {
@@ -151,19 +151,19 @@ func TestDiscardFailureTimestamps(t *testing.T) {
 		t.Fatal("returned the wrong items", finaloutput)
 	}
 
-	retentionTime, _ = buildRetentionDuration(16)
+	retentionTime, _ = buildMaxAgeDuration(16)
 	finaloutput = discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 2, t)
 
-	retentionTime, _ = buildRetentionDuration(17)
+	retentionTime, _ = buildMaxAgeDuration(17)
 	finaloutput = discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 1, t)
 
-	retentionTime, _ = buildRetentionDuration(25)
+	retentionTime, _ = buildMaxAgeDuration(25)
 	finaloutput = discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 1, t)
 
-	retentionTime, _ = buildRetentionDuration(26)
+	retentionTime, _ = buildMaxAgeDuration(26)
 	finaloutput = discardFailureTimestamps(testData, retentionTime)
 	testResultLength(finaloutput, 0, t)
 
