@@ -1,0 +1,41 @@
+image: docker-registry.nine.ch/ninech/golang-tools:latest
+
+#  DOCKER_AUTH_CONFIG is a SECRET in your gitlab ci/cd project setup
+before_script:
+  - echo "${DOCKER_AUTH_CONFIG}" > ~/.docker/config.json
+  - mkdir -p $GOPATH/src/gitlab.nine.ch/$CI_PROJECT_NAMESPACE/
+  - ln -s $CI_PROJECT_DIR $GOPATH/src/gitlab.nine.ch/$CI_PROJECT_PATH
+  - cd $GOPATH/src/gitlab.nine.ch/$CI_PROJECT_PATH
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+services:
+  - name: docker:dind
+    command: ["--insecure-registry=172.30.0.0/16"]
+
+
+docker:
+  stage: test
+  script:
+    - task ci
+    - docker tag docker-registry.nine.ch/ninech/openshift-job-cleaner:latest gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
+    - docker push gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
+  cache:
+    key: build
+    paths:
+      - .task
+      - vendor
+  tags:
+    - dind
+
+push:
+  stage: deploy
+  script:
+    - docker pull gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
+    - docker tag gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
+    - docker push docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
+  tags:
+    - dind
+  only:
+    - master

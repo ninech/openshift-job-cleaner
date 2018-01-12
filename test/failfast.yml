@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: job-failfast-
+spec:
+  activeDeadlineSeconds: 30
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: pi
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["ashashashash"]
+      restartPolicy: OnFailure

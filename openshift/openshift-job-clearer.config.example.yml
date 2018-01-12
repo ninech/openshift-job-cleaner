@@ -1,0 +1,23 @@
+blacklist:
+# namespaces in the blacklist will never be checked for job cleanup
+  - openshift-infra
+default:
+# details in the default block will be used if a namespace specific configuration is not supplied,
+  success:
+    # max age is in minutes
+    max_age: 60
+    # retention is the number of newest jobs to retain, jobs must be within max-age
+    retention: 1
+  failure:
+    max_age: 1
+    retention: 5
+
+namespaces:
+# namespace specific configurations should be placed in the block titled {my-namespace} underneath the namespace top-level key
+  my-namespace-actual:
+    success:
+      max_age: 1
+      retention: 1
+    failure:
+      max_age: 1
+      retention: 1

@@ -1,0 +1,13 @@
+Dockerfile
+Taskfile.yml
+Taskvars.yml
+README.md
+openshift
+test
+vendor
+goss.yaml
+*_test.go
+.gitlab-ci.yml
+README.md
+.coverage.txt
+.task

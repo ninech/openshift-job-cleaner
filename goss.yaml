@@ -1,0 +1,24 @@
+file:
+  /go/bin/app:
+    exists: true
+    mode: "0755"
+    group: root
+    filetype: file
+  /usr/bin/oc:
+    exists: true
+    mode: "0755"
+    group: root
+    filetype: file
+package:
+  git:
+    installed: false
+  golang-1.9-go:
+    installed: false
+  software-properties-common:
+    installed: false
+  wget:
+    installed: false
+command:
+  oc version:
+    exit-status: 0
+    timeout: 10000
