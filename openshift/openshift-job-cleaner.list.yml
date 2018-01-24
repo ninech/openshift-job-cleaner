@@ -10,11 +10,14 @@ items:
     ojc.yml: >-
       blacklist:
         - default
+        - openshift-infra
+        - logging
         - kube-public
         - kube-system
         - management-infra
+        - nine-prometheus-1
+        - nine-prometheus-2
         - openshift
-        - openshift-infra
       default:
         success:
           max_age: 120
@@ -28,10 +31,13 @@ items:
   metadata:
     name: openshift-job-cleaner
   spec:
+    concurrencyPolicy: Forbid
     # every hour
     schedule: "0 * * * *"
     jobTemplate:
       spec:
+        completions: 1
+        parallelism: 1
         template:
           spec:
             activeDeadlineSeconds: 300

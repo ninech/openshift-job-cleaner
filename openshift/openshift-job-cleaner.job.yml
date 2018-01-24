@@ -3,7 +3,8 @@ kind: Job
 metadata:
   generateName: openshift-job-cleaner-
 spec:
-  activeDeadlineSeconds: 300
+  completions: 1
+  parallelism: 1
   template:
     metadata:
       labels:

@@ -3,10 +3,13 @@ kind: ScheduledJob
 metadata:
   name: openshift-job-cleaner-fast
 spec:
+  concurrencyPolicy: Forbid
   # every hour
   schedule: "*/5 * * * *"
   jobTemplate:
     spec:
+      completions: 1
+      parallelism: 1
       template:
         spec:
           activeDeadlineSeconds: 300
