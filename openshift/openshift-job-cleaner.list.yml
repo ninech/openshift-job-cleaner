@@ -15,8 +15,6 @@ items:
         - kube-public
         - kube-system
         - management-infra
-        - nine-prometheus-1
-        - nine-prometheus-2
         - openshift
       default:
         success:
@@ -49,7 +47,7 @@ items:
                 name: ojc-config-file
             containers:
             - name: openshift-job-cleaner
-              image: docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
+              image: docker.io/ninech/openshift-job-cleaner:latest
               env:
                 - name: SENTRY_DSN
                   value: 'https://<key>:<secret>@sentry.io/<project>'

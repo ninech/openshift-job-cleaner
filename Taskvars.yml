@@ -1,4 +1,4 @@
-NS: docker-registry.nine.ch/ninech
+NS: ninech
 REPO: openshift-job-cleaner
 NAME: openshift-job-cleaner
 VERSION: latest

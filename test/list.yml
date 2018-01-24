@@ -39,7 +39,7 @@ items:
                 name: ojc-config-file
             containers:
             - name: openshift-job-cleaner
-              image: docker-registry.nine.ch/ninech/openshift-job-cleaner:integration
+              image: docker.io/ninech/openshift-job-cleaner:integration
               env:
                 - name: SENTRY_DSN
                   value: 'https://<key>:<secret>@sentry.io/<project>'
