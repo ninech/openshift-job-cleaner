@@ -19,7 +19,7 @@ docker:
   stage: test
   script:
     - task ci
-    - docker tag docker-registry.nine.ch/ninech/openshift-job-cleaner:latest gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
+    - docker tag docker.io/ninech/openshift-job-cleaner:latest gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
     - docker push gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
   cache:
     key: build
@@ -33,8 +33,8 @@ push:
   stage: deploy
   script:
     - docker pull gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest
-    - docker tag gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
-    - docker push docker-registry.nine.ch/ninech/openshift-job-cleaner:latest
+    - docker tag gitlab.nine.ch:4567/ninech/openshift-job-cleaner:latest docker.io/ninech/openshift-job-cleaner:latest
+    - docker push docker.io/ninech/openshift-job-cleaner:latest
   tags:
     - dind
   only:
