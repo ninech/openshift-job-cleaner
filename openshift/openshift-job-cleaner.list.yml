@@ -55,4 +55,4 @@ items:
                 - mountPath: /opt/ojc/
                   name: ojc-config-file
                   readOnly: true
-            restartPolicy: OnFailure
+            restartPolicy: Never
